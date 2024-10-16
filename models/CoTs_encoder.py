@@ -77,7 +77,7 @@ class BandedFourierLayer(nn.Module):
         nn.init.uniform_(self.bias, -bound, bound)
 
 
-class CoSTEncoder(nn.Module): #细看
+class CoSTEncoder(nn.Module): 
     def __init__(self, input_dims, output_dims,
                  kernels: List[int],
                  length: int,
@@ -92,10 +92,9 @@ class CoSTEncoder(nn.Module): #细看
         self.component_dims = component_dims
         self.hidden_dims = hidden_dims
         self.mask_mode = mask_mode
-        print("self.mask_mode", self.mask_mode)
-        self.input_fc = nn.Linear(input_dims, hidden_dims) #原始数据映射到隐藏层
+        self.input_fc = nn.Linear(input_dims, hidden_dims) 
 
-        self.feature_extractor = DilatedConvEncoder( #顺序通过几个空洞卷积
+        self.feature_extractor = DilatedConvEncoder( 
             hidden_dims,
             [hidden_dims] * depth + [output_dims],
             kernel_size=3
@@ -225,7 +224,7 @@ class CoSTEncoderTCN(nn.Module): #细看
 
     #def forward(self, x, tcn_output=False, mask='all_true'):  # x: B x T x input_dims
     def forward(self, x, tcn_output=False, mask=None):  # x: B x T x input_dims
-        nan_mask = ~x.isnan().any(axis=-1)  # nan_mask: B x T （true表示该时间点不包含nan， false表示包含nan）
+        nan_mask = ~x.isnan().any(axis=-1)  # nan_mask: B x T 
         # x[~nan_mask] = 0
         nan_mask_float = nan_mask.float()
         x = x * nan_mask_float.unsqueeze(2)
@@ -281,9 +280,9 @@ class CoSTEncoderSeason(nn.Module): #细看
         self.hidden_dims = hidden_dims
         self.mask_mode = mask_mode
         print("self.mask_mode", self.mask_mode)
-        self.input_fc = nn.Linear(input_dims, hidden_dims) #原始数据映射到隐藏层
+        self.input_fc = nn.Linear(input_dims, hidden_dims) 
 
-        self.feature_extractor = DilatedConvEncoder( #顺序通过几个空洞卷积
+        self.feature_extractor = DilatedConvEncoder( 
             hidden_dims,
             [hidden_dims] * depth + [output_dims],
             kernel_size=3
@@ -308,7 +307,7 @@ class CoSTEncoderSeason(nn.Module): #细看
 
     #def forward(self, x, tcn_output=False, mask='all_true'):  # x: B x T x input_dims
     def forward(self, x, tcn_output=False, mask=None):  # x: B x T x input_dims
-        nan_mask = ~x.isnan().any(axis=-1)  # nan_mask: B x T （true表示该时间点不包含nan， false表示包含nan）
+        nan_mask = ~x.isnan().any(axis=-1)  # nan_mask: B x T 
         # x[~nan_mask] = 0
         nan_mask_float = nan_mask.float()
         x = x * nan_mask_float.unsqueeze(2)

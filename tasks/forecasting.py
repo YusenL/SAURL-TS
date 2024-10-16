@@ -22,12 +22,12 @@ def cal_metrics(pred, target):
     }
     
 def eval_forecasting(model, data, train_slice, valid_slice, test_slice, scaler, pred_lens, n_covariate_cols, padding_length, batch_size):
-                    #模型，数据，训练的切片，验证的切片，测试的切片，标准化参数，预测长度，日期变量的列数量
+
     #padding = 200
     padding = padding_length - 1 
     #print("0. eval_forecasting_data", data.shape)
     t = time.time()
-    all_repr = model.casual_encode( #得到整个数据集data的表示[1,17420,320] 1为batch，17420为时间步长，320为表示层的维度
+    all_repr = model.casual_encode( 
         data,
         #encoding_window = 'full_series',
         sliding_length=1,
@@ -36,22 +36,13 @@ def eval_forecasting(model, data, train_slice, valid_slice, test_slice, scaler, 
     )
     ts2vec_infer_time = time.time() - t
     #print("all_repr.shape",all_repr.shape)
-
-    # #检查张量中是否存在 NaN 值
-    # contains_nan = np.isnan(all_repr).any()
-
-    # if contains_nan:
-    #     print("all_repr contains NaN values.")
-    #     all_repr[np.isnan(all_repr)] = 0
-    # else:
-    #     print("all_repr does not contain NaN values.")
     
-    train_repr = all_repr[:, train_slice] #(1, 8640, 320)作为input
+    train_repr = all_repr[:, train_slice] 
     valid_repr = all_repr[:, valid_slice]
     test_repr = all_repr[:, test_slice]
     #print("train_repr",train_repr.shape)
 
-    train_data = data[:, train_slice, n_covariate_cols:] #(1, 8640, 1)作为label
+    train_data = data[:, train_slice, n_covariate_cols:] 
     valid_data = data[:, valid_slice, n_covariate_cols:]
     test_data = data[:, test_slice, n_covariate_cols:]
     #print("train_data",train_data.shape)

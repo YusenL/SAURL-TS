@@ -1,16 +1,16 @@
 
-config_etth1_uni = {'batch_size': 32, 'lr': 3e-05, 'meta_lr': 0.01, 'mask_mode': 'mask_last',
+config_etth1_uni = {'batch_size': 32, 'lr': 3e-05, 'meta_lr': 0.01, 'mask_mode': 'all_true',
                     'augmask_mode': 'all_true', 'bias_init': 0.90, 'local_weight': 0.3,
-                    'reg_weight': 0.003, 'regular_weight': 0, 'noise_weight': 1.25, 'aug_distance_byol_weight': 1.25, 'dropout': 0.1,
+                    'reg_weight': 0.003, 'regular_weight': 0.1, 'noise_weight': 0.25, 'aug_distance_byol_weight': 1.25, 'dropout': 0.1,
                     'augdropout': 0.1, 'hidden_dims': 64, 'max_train_length': 257,
                     'depth': 10, 'aug_depth': 1, 'gamma_zeta': 0.05, 'aug_dim': 16,'seed':42,
-                    'ratio_step': 1, 'gumbel_bias': 0.05, 'hard_mask': True, 'epochs': 115}
-config_etth1 = {'batch_size': 32, 'lr': 1e-05, 'meta_lr': 0.012, 'mask_mode': 'mask_last',
-                    'augmask_mode': 'mask_last', 'bias_init': 0.90, 'local_weight': 0.0,
-                    'reg_weight': 0.2, 'regular_weight': 0, 'noise_weight': 0.25, 'aug_distance_byol_weight': 1.25, 'dropout': 0.1,
+                    'ratio_step': 1, 'gumbel_bias': 0.05, 'hard_mask': True, 'epochs': 40}
+config_etth1 = {'batch_size': 32, 'lr': 1e-05, 'meta_lr': 0.012, 'mask_mode': 'all_true',
+                    'augmask_mode': 'all_true', 'bias_init': 0.90, 'local_weight': 0.0,
+                    'reg_weight': 0.2, 'regular_weight': 0.01, 'noise_weight': 0.25, 'aug_distance_byol_weight': 1.25, 'dropout': 0.1,
                     'augdropout': 0.1, 'hidden_dims': 128, 'max_train_length': 257,
                     'depth': 10, 'aug_depth': 1, 'gamma_zeta': 0.05, 'aug_dim': 16,'seed':42,
-                    'ratio_step': 2, 'gumbel_bias': 0.05, 'hard_mask': True, 'epochs': 35}
+                    'ratio_step': 2, 'gumbel_bias': 0.05, 'hard_mask': True, 'epochs': 20}
 
 
 def merge_parameter(base_params, override_params):
@@ -66,26 +66,6 @@ def merege_config(config, dataset, univar = True):
             config_out = merge_parameter(config, config_etth1_uni)
         else:
             config_out = merge_parameter(config, config_etth1)
-    elif dataset == "ETTh2":
-        if univar :
-            config_out = merge_parameter(config, config_etth2_uni)
-        else:
-            config_out = merge_parameter(config, config_etth2)
-    elif dataset == "ETTm1":
-        if univar :
-            config_out = merge_parameter(config, config_ettm1_uni)
-        else:
-            config_out = merge_parameter(config, config_ettm1)
-    elif dataset == "electricity":
-        if univar :
-            config_out = merge_parameter(config, config_elec_uni)
-        else:
-            config_out = merge_parameter(config, config_elec)
-    elif dataset == "WTH":
-        if univar :
-            config_out = merge_parameter(config, config_WTH_uni)
-        else:
-            config_out = merge_parameter(config, config_WTH)
     else:
         print("not pre-config for current dataset")
 

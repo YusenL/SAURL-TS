@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-# 定义可学习的损失函数系数模块
+
 class AdaptiveBYOLLoss(nn.Module):
     def __init__(self, init_alpha=0.25, init_beta=0.25, init_gamma=0.25):
         super(AdaptiveBYOLLoss, self).__init__()
@@ -18,76 +18,11 @@ class AdaptiveBYOLLoss(nn.Module):
         self.gamma = nn.Parameter(torch.tensor(float(init_gamma), requires_grad=True))
 
     def forward(self, byol_loss_fft, byol_loss_time, byol_loss_cross):
-        # 使用 softmax 确保系数的和为 1
+        
         weights = torch.softmax(torch.stack([self.alpha, self.beta, self.gamma]), dim=0)
         byol_loss = weights[0] * byol_loss_fft + weights[1] * byol_loss_time + weights[2] * byol_loss_cross
-        print(f"Weights: FFT: {weights[0].item()}, Time: {weights[1].item()}, Cross: {weights[2].item()}")
+        
         return byol_loss, weights
-
-# # 定义 BYOL 的损失函数
-# class BYOLLoss(nn.Module):
-#     def __init__(self):
-#         super(BYOLLoss, self).__init__()
-#         self.mse_loss = nn.MSELoss()  # 使用均方误差作为损失函数
-
-#     def forward(self, p_online, z_target):
-#         """
-#         计算 BYOL 损失。
-
-#         参数：
-#         p_online (torch.Tensor): 在线网络的预测输出
-#         z_target (torch.Tensor): 目标网络的投影输出
-
-#         返回：
-#         torch.Tensor: 计算出的损失值
-#         """
-#         loss = self.mse_loss(p_online, z_target)  # 计算在线网络的预测输出和目标网络的投影输出之间的均方误差
-#         return loss
-
-# # 定义 BYOL 模型
-# class BYOL(nn.Module):
-#     def __init__(self, representation_dim):
-#         super(BYOL, self).__init__()
-#         self.online_projection = nn.Sequential(  # 在线网络的投影部分 (projection)
-#             nn.Linear(representation_dim, 256),
-#             nn.ReLU(),
-#             nn.Linear(256, representation_dim)
-#         )
-#         self.online_predictor = nn.Sequential(  # 在线网络的预测头部分 (prediction)
-#             nn.Linear(representation_dim, 256),
-#             nn.ReLU(),
-#             nn.Linear(256, representation_dim)
-#         )
-#         self.target_projection = nn.Sequential(  # 目标网络的投影部分 (projection)
-#             nn.Linear(representation_dim, 256),
-#             nn.ReLU(),
-#             nn.Linear(256, representation_dim)
-#         )
-#         self._initialize_target_network()  # 初始化目标网络的参数
-
-#     def _initialize_target_network(self):
-#         for target_param, online_param in zip(self.target_projection.parameters(), self.online_projection.parameters()):
-#             target_param.data.copy_(online_param.data)  # 将目标网络的参数设置为在线网络的参数
-#             target_param.requires_grad = False  # 不对目标网络的参数进行梯度更新
-
-#     @torch.no_grad()
-#     def _update_target_network(self, momentum=0.99):
-#         for target_param, online_param in zip(self.target_projection.parameters(), self.online_projection.parameters()):
-#             target_param.data = momentum * target_param.data + (1 - momentum) * online_param.data  # 目标网络参数的指数移动平均
-
-#     def forward(self, x1, x2):
-#         z1_online_proj = self.online_projection(x1)  # 在线网络的投影部分对第一个视角的投影输出
-#         z2_online_proj = self.online_projection(x2)  # 在线网络的投影部分对第二个视角的投影输出
-
-#         p1_online = self.online_predictor(z1_online_proj)  # 在线网络的预测头部分输出（第一个视角）
-#         p2_online = self.online_predictor(z2_online_proj)  # 在线网络的预测头部分输出（第二个视角）
-
-#         with torch.no_grad():
-#             z1_target_proj = self.target_projection(x1)  # 目标网络的投影部分对第一个视角的投影输出
-#             z2_target_proj = self.target_projection(x2)  # 目标网络的投影部分对第二个视角的投影输出
-
-#         return p1_online, p2_online, z1_target_proj, z2_target_proj  # 返回在线网络的预测头输出和目标网络的投影输出
-
 
 
 def hierarchical_contrastive_loss(z1, z2, alpha=0.5, temporal_unit=0):

@@ -96,9 +96,9 @@ class TransposeLayer(nn.Module):
 def MLP(dim, projection_size, hidden_size=4096, sync_batchnorm=None):
     return nn.Sequential(
         nn.Linear(dim, hidden_size),
-        TransposeLayer(-2, -1),  # 交换倒数第二和最后一维以实现batchnorm
+        TransposeLayer(-2, -1),  
         MaybeSyncBatchnorm(sync_batchnorm)(hidden_size),
-        TransposeLayer(-2, -1), #交换回来
+        TransposeLayer(-2, -1), 
         nn.ReLU(inplace=True),
         nn.Linear(hidden_size, projection_size)
     )
@@ -135,7 +135,6 @@ class NetWrapper(nn.Module):
         self.hidden = {}
         self.hook_registered = False
 
-    # 找到中间层（不用）
     def _find_layer(self):
         if type(self.layer) == str:
             modules = dict([*self.net.named_modules()])
@@ -145,12 +144,10 @@ class NetWrapper(nn.Module):
             return children[self.layer]
         return None
 
-    #提取中间层（不用）
     def _hook(self, _, input, output):
         device = input[0].device
         self.hidden[device] = flatten(output)
 
-    #提取中间层（不用）
     def _register_hook(self):
         layer = self._find_layer()
         assert layer is not None, f'hidden layer ({self.layer}) not found'
